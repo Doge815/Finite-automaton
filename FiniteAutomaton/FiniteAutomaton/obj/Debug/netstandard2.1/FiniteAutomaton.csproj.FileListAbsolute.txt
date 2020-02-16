@@ -1,0 +1,16 @@
+/home/doge815/Desktop/FiniteAutomaton/FiniteAutomaton/bin/Debug/netstandard2.1/FiniteAutomaton.deps.json
+/home/doge815/Desktop/FiniteAutomaton/FiniteAutomaton/bin/Debug/netstandard2.1/FiniteAutomaton.dll
+/home/doge815/Desktop/FiniteAutomaton/FiniteAutomaton/bin/Debug/netstandard2.1/FiniteAutomaton.pdb
+/home/doge815/Desktop/FiniteAutomaton/FiniteAutomaton/obj/Debug/netstandard2.1/FiniteAutomaton.csprojAssemblyReference.cache
+/home/doge815/Desktop/FiniteAutomaton/FiniteAutomaton/obj/Debug/netstandard2.1/FiniteAutomaton.AssemblyInfoInputs.cache
+/home/doge815/Desktop/FiniteAutomaton/FiniteAutomaton/obj/Debug/netstandard2.1/FiniteAutomaton.AssemblyInfo.cs
+/home/doge815/Desktop/FiniteAutomaton/FiniteAutomaton/obj/Debug/netstandard2.1/FiniteAutomaton.dll
+/home/doge815/Desktop/FiniteAutomaton/FiniteAutomaton/obj/Debug/netstandard2.1/FiniteAutomaton.pdb
+/home/doge815/FiniteAutomaton/FiniteAutomaton/bin/Debug/netstandard2.1/FiniteAutomaton.deps.json
+/home/doge815/FiniteAutomaton/FiniteAutomaton/bin/Debug/netstandard2.1/FiniteAutomaton.dll
+/home/doge815/FiniteAutomaton/FiniteAutomaton/bin/Debug/netstandard2.1/FiniteAutomaton.pdb
+/home/doge815/FiniteAutomaton/FiniteAutomaton/obj/Debug/netstandard2.1/FiniteAutomaton.csprojAssemblyReference.cache
+/home/doge815/FiniteAutomaton/FiniteAutomaton/obj/Debug/netstandard2.1/FiniteAutomaton.AssemblyInfoInputs.cache
+/home/doge815/FiniteAutomaton/FiniteAutomaton/obj/Debug/netstandard2.1/FiniteAutomaton.AssemblyInfo.cs
+/home/doge815/FiniteAutomaton/FiniteAutomaton/obj/Debug/netstandard2.1/FiniteAutomaton.dll
+/home/doge815/FiniteAutomaton/FiniteAutomaton/obj/Debug/netstandard2.1/FiniteAutomaton.pdb

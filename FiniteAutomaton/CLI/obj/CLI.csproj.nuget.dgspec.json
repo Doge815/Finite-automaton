@@ -1,0 +1,112 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/doge815/FiniteAutomaton/CLI/CLI.csproj": {}
+  },
+  "projects": {
+    "/home/doge815/FiniteAutomaton/CLI/CLI.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/doge815/FiniteAutomaton/CLI/CLI.csproj",
+        "projectName": "CLI",
+        "projectPath": "/home/doge815/FiniteAutomaton/CLI/CLI.csproj",
+        "packagesPath": "/home/doge815/.nuget/packages/",
+        "outputPath": "/home/doge815/FiniteAutomaton/CLI/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/doge815/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {
+              "/home/doge815/FiniteAutomaton/FiniteAutomaton/FiniteAutomaton.csproj": {
+                "projectPath": "/home/doge815/FiniteAutomaton/FiniteAutomaton/FiniteAutomaton.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/opt/dotnet/sdk/3.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/doge815/FiniteAutomaton/FiniteAutomaton/FiniteAutomaton.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/doge815/FiniteAutomaton/FiniteAutomaton/FiniteAutomaton.csproj",
+        "projectName": "FiniteAutomaton",
+        "projectPath": "/home/doge815/FiniteAutomaton/FiniteAutomaton/FiniteAutomaton.csproj",
+        "packagesPath": "/home/doge815/.nuget/packages/",
+        "outputPath": "/home/doge815/FiniteAutomaton/FiniteAutomaton/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/doge815/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/opt/dotnet/sdk/3.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
