@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/doge815/FiniteAutomaton/FiniteAutomaton/FiniteAutomaton.csproj",
+      "projectUniqueName": "/home/doge815/git/Finite-automaton/FiniteAutomaton/FiniteAutomaton/FiniteAutomaton.csproj",
       "projectName": "FiniteAutomaton",
-      "projectPath": "/home/doge815/FiniteAutomaton/FiniteAutomaton/FiniteAutomaton.csproj",
+      "projectPath": "/home/doge815/git/Finite-automaton/FiniteAutomaton/FiniteAutomaton/FiniteAutomaton.csproj",
       "packagesPath": "/home/doge815/.nuget/packages/",
-      "outputPath": "/home/doge815/FiniteAutomaton/FiniteAutomaton/obj/",
+      "outputPath": "/home/doge815/git/Finite-automaton/FiniteAutomaton/FiniteAutomaton/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/doge815/.nuget/NuGet/NuGet.Config"

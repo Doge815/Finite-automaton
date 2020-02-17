@@ -7,58 +7,47 @@ namespace FiniteAuto
     using System.Linq;
     public class FiniteAutomaton : ICloneable
     {
-        Aplphabet aplphabet = null;
+        internal Alphabet alphabet { get; }
         internal List<State> States { get; }
-        public State StartState {get => States[0];}
-        public IReadOnlyList<aplphababet.t> Symbols{get;}
+        public State StartState { get; }
+        private List<State> endStates;
+        public List<State> EndStates { get => endStates.ToList(); }
 
-        public FiniteAutomaton(List<SymbolType> s)
+        public FiniteAutomaton(Alphabet a)
         {
-            Symbols = s ?? throw new ArgumentNullException(nameof(s));
-            States = new List<State> { new State(this) };
+            alphabet = a;
+            States = new List<State>();
+            endStates = new List<State>();
         }
 
-        public State AddState(StateType type)
+        public State AddState()
         {
-            if((type & StateType.Start) != 0) Environment.FailFast("");
-            return AddStateWithoutLimitations(type);
-        }
-
-        private State AddStateWithoutLimitations(StateType type)
-        {
-            var state = new State<SymbolType>(type, this);
+            var state = new State(this, alphabet);
             States.Add(state);
             return state;
         }
 
-        private FiniteAutomaton ClearFiniteAutomaton(List<SymbolType> s)
-        {
-            FiniteAutomaton newAutomaton = new FiniteAutomaton(s);
-            newAutomaton.States.Clear();
-            return newAutomaton;
-        }
-
-        public string GetTable() => TableData().TableFormat();
+        public string GetTable() => Extensions.TableFormat(TableData());
     
         private string[,] TableData()
         {
             const string title = "State";
 
-            string[,] table = new string[Symbols.Count + 1, States.Count + 1];
+            string[,] table = new string[alphabet.Symbols.Count + 1, States.Count + 1];
             table[0,0] = title;
 
-            for(int i = 0; i < Symbols.Count; i++)
+            for(int i = 0; i < alphabet.Symbols.Count; i++)
             {
-                table[i+1, 0] = Symbols[i].ToString();
+                table[i+1, 0] = alphabet.Symbols[i].ToString();
             }
 
             for(int i = 0; i < States.Count; i++)
             {
                 State s = States[i];
                 table[0,i+1] = s.Name;
-                for(int u = 0; u < Symbols.Count; u++)
+                for(int u = 0; u < alphabet.Symbols.Count; u++)
                 {
-                    table[u + 1, i + 1] = s.Follow.TryGetValue(Symbols[u], out List<State<SymbolType>> follow)
+                    table[u + 1, i + 1] = s.Follow.TryGetValue(alphabet.Symbols[u], out List<State> follow)
                         ? string.Join(", ", follow.Select(x => x.Name))
                         : "-";
                 }
@@ -68,15 +57,15 @@ namespace FiniteAuto
 
         private (FiniteAutomaton, Dictionary<State, State>) DeepCopyFull()
         {
-            FiniteAutomaton Copy = ClearFiniteAutomaton(Symbols.ToList());
+            FiniteAutomaton Copy = new FiniteAutomaton(alphabet);
             Dictionary<State, State> Translate = new Dictionary<State, State>();
             foreach(State s in States)
             {
-                State ss = Copy.AddStateWithoutLimitations(s.Type);
+                State ss = Copy.AddState();
                 Translate.Add(s, ss);
             }
             States
-                .ForEach    (z => Symbols
+                .ForEach    (z => alphabet.Symbols
                 .Where      (y => z.Follow.ContainsKey(y))
                 .ToList     ()
                 .ForEach    (x => z.Follow[x]
@@ -94,7 +83,7 @@ namespace FiniteAuto
         {
             FiniteAutomaton NFA = DeepCopy();
             
-            FiniteAutomaton DFA = new FiniteAutomaton(Symbols.ToList());
+            FiniteAutomaton DFA = new FiniteAutomaton(alphabet);
 
             Dictionary<State, List<State>> Map = new Dictionary<State, List<State>>();
             for(bool finished = false; !finished;)
@@ -105,7 +94,7 @@ namespace FiniteAuto
                     if(!Map.ContainsKey(D))
                     {
                         finished = false;
-                        State s = new State(DFA);
+                        State s = DFA.AddState();
                         
                     }
                 }
@@ -118,9 +107,9 @@ namespace FiniteAuto
             List<List<State>> ListParts = new List<List<State>>{new List<State>(), new List<State>()};
             foreach(State s in States)
             {
-                ListParts[(s.Type & StateType.End)!=0?0:1].Add(s);
+                ListParts[EndStates.Contains(s)?0:1].Add(s);
             }
-            foreach(SymbolType s in Symbols)
+            foreach(object s in alphabet.Symbols)
             {
                 List<Dictionary<State, List<State>>> bind = new List<Dictionary<State, List<State>>>();
                 foreach(List<State> ss in ListParts)
@@ -148,7 +137,7 @@ namespace FiniteAuto
                 ListParts = NewListParts;
             }
 
-            FiniteAutomaton Minimized = ClearFiniteAutomaton(Symbols.ToList());
+            FiniteAutomaton Minimized = new FiniteAutomaton(alphabet);
             foreach(List<State> s in ListParts)
             {
                 //Minimized.AddStateWithoutLimitations()

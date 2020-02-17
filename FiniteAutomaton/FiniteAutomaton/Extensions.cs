@@ -1,5 +1,5 @@
 #pragma warning disable RCS1037
-namespace FiniteAutomaton
+namespace FiniteAuto
 {
     using System.Text;
     public static class Extensions

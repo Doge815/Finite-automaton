@@ -6,39 +6,33 @@ namespace FiniteAuto
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     public class State
     {
-        Type T;
         readonly private string? name;
         public string Name {get => name ?? Automaton.States.IndexOf(this).ToString(); }
 
-        private Aplphabet<T> aplphabet;
-        private FiniteAutomaton Automaton {get;}S
+        private Alphabet aplphabet;
+        private FiniteAutomaton Automaton {get;}
 
-        internal Dictionary<T, List<State>> Follow {get; }
+        internal Dictionary<object, List<State>> Follow { get; }
 
-        internal State(FiniteAutomaton e, string? name = null, Type t)
+        internal State(FiniteAutomaton e, Alphabet a, string? name = null)
         {
-            T = t;
 
             Automaton = e;
-            Follow = new Dictionary<T, List<State>>();
+            aplphabet = a;
+            Follow = new Dictionary<object, List<State>>();
             this.name = name;
         }
 
-        public State(FiniteAutomaton automaton) 
-        {
-            this.Automaton = automaton;
-               
-        }
-
-        public void AddFollow(State s, T t)
+        public void AddFollow(State s, object o)
         {
             if(s.Automaton != Automaton) Environment.FailFast("");
-            if(!Automaton.Symbols.Any(x => x.Equals(t))) Environment.FailFast("");
-            if(!Follow.ContainsKey(t)) Follow.Add(t, new List<State>());
-            if(Follow[t].Contains(s)) Environment.FailFast("");
-            Follow[t].Add(s);
+            if(!aplphabet.Symbols.Any(x => x.Equals(o))) Environment.FailFast("");
+            if(!Follow.ContainsKey(o)) Follow.Add(o, new List<State>());
+            if(Follow[o].Contains(s)) Environment.FailFast("");
+            Follow[o].Add(s);
         }
     }
 }

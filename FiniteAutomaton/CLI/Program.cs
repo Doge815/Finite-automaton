@@ -4,7 +4,7 @@ namespace CLI
 {
     using System;
     using System.Linq;
-    using FiniteAutomaton;
+    using FiniteAuto;
     using System.IO;
     using System.Collections.Generic;
 
@@ -12,11 +12,11 @@ namespace CLI
     {
         private static void Main()
         {
-            FiniteAutomaton<char> automaton = new FiniteAutomaton<char>(new List<char>{'a', 'b'});
-            //FiniteAutomaton<char> automaton = new FiniteAutomaton<char>(Enumerable.Range(0, char.MaxValue).Select(x => (char)x).Where(char.IsLetter).ToList());
-            State<char> startState = automaton.StartState;
-            State<char> one = automaton.AddState(StateType.None);
-            State<char> two = automaton.AddState(StateType.End);
+            Alphabet a = new Alphabet(new List<object>{'a', 'b', 'c'});
+            FiniteAutomaton automaton = new FiniteAutomaton(a);
+            State startState = automaton.StartState;
+            State two = automaton.AddState();
+            State one = automaton.AddState();
             startState.AddFollow(one, 'a');
             startState.AddFollow(two, 'b');
             one.AddFollow(two, 'a');

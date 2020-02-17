@@ -3,15 +3,23 @@ namespace FiniteAuto
 {
     using System;
     using System.Linq;
-    public class Aplphabet
+    public class Alphabet
     {
-        public Type t;
-        private List<t> symbols;
-        public List<t> Symbols {get => symbols.ToList(); }
+        public Type T;
+        private List<object> symbols;
+        public List<object> Symbols {get => symbols.ToList(); }
 
-        public Aplphabet (IEnumerable<t> symbol)
+        public Alphabet (IEnumerable<object> values)
         {
-            symbols = symbol.ToList();
+            Type t = null;
+            symbols = new List<object>();
+            foreach(object o in values)
+            {
+                symbols.Add(o);
+                if(t == null) t = o.GetType();
+                if(t != o.GetType()) throw new ArgumentException();
+            }
+            T = t;
         }
     }
 }
