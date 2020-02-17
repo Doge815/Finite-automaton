@@ -1,5 +1,6 @@
 #nullable enable
 #pragma warning disable RCS1037
+using System;
 namespace FiniteAuto
 {
     using System;
@@ -7,20 +8,29 @@ namespace FiniteAuto
     using System.Linq;
     public class State
     {
+        Type T;
         readonly private string? name;
         public string Name {get => name ?? Automaton.States.IndexOf(this).ToString(); }
 
         private Aplphabet<T> aplphabet;
-        internal Dictionary<T, List<State> Follow {get; }
+        private FiniteAutomaton Automaton {get;}S
 
-        internal State(FiniteAutomaton e, string? name = null)
+        internal Dictionary<T, List<State>> Follow {get; }
+
+        internal State(FiniteAutomaton e, string? name = null, Type t)
         {
+            T = t;
+
             Automaton = e;
             Follow = new Dictionary<T, List<State>>();
             this.name = name;
         }
 
-        private FiniteAutomaton Automaton{get;}
+        public State(FiniteAutomaton automaton) 
+        {
+            this.Automaton = automaton;
+               
+        }
 
         public void AddFollow(State s, T t)
         {

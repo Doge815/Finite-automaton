@@ -85,26 +85,26 @@ namespace FiniteAuto
             return (Copy, Translate);
         }
 
-        public FiniteAutomaton<SymbolType> DeepCopy() => DeepCopyFull().Item1;
+        public FiniteAutomaton DeepCopy() => DeepCopyFull().Item1;
 
         public object Clone() => DeepCopy();
 
-        public FiniteAutomaton<SymbolType> ConvertToDFA()
+        public FiniteAutomaton ConvertToDFA()
         {
-            FiniteAutomaton<SymbolType> NFA = DeepCopy();
+            FiniteAutomaton NFA = DeepCopy();
             
-            FiniteAutomaton<SymbolType> DFA = new FiniteAutomaton<SymbolType>(Symbols.ToList());
+            FiniteAutomaton DFA = new FiniteAutomaton(Symbols.ToList());
 
-            Dictionary<State<SymbolType>, List<State<SymbolType>>> Map = new Dictionary<State<SymbolType>, List<State<SymbolType>>>();
+            Dictionary<State, List<State>> Map = new Dictionary<State, List<State>>();
             for(bool finished = false; !finished;)
             {
                 finished = true;
-                foreach(State<SymbolType> D in DFA.States)
+                foreach(State D in DFA.States)
                 {
                     if(!Map.ContainsKey(D))
                     {
                         finished = false;
-                        State<SymbolType> s = new State<SymbolType>(StateType.None, DFA);
+                        State s = new State(DFA);
                         
                     }
                 }
@@ -112,33 +112,33 @@ namespace FiniteAuto
             return DFA;
         }
 
-        public FiniteAutomaton<SymbolType> Minimize()
+        public FiniteAutomaton Minimize()
         {
-            List<List<State<SymbolType>>> ListParts = new List<List<State<SymbolType>>>{new List<State<SymbolType>>(), new List<State<SymbolType>>()};
-            foreach(State<SymbolType> s in States)
+            List<List<State>> ListParts = new List<List<State>>{new List<State>(), new List<State>()};
+            foreach(State s in States)
             {
                 ListParts[(s.Type & StateType.End)!=0?0:1].Add(s);
             }
             foreach(SymbolType s in Symbols)
             {
-                List<Dictionary<State<SymbolType>, List<State<SymbolType>>>> bind = new List<Dictionary<State<SymbolType>, List<State<SymbolType>>>>();
-                foreach(List<State<SymbolType>> ss in ListParts)
+                List<Dictionary<State, List<State>>> bind = new List<Dictionary<State, List<State>>>();
+                foreach(List<State> ss in ListParts)
                 {
-                    bind.Add(new Dictionary<State<SymbolType>, List<State<SymbolType>>>());
-                    foreach(State<SymbolType> sss in ss)
+                    bind.Add(new Dictionary<State, List<State>>());
+                    foreach(State sss in ss)
                     {
                         bind.Last().Add(sss, ListParts.First(x => x.Contains(sss)));
                     }
                 }
-                List<List<State<SymbolType>>> NewListParts = new List<List<State<SymbolType>>>();
-                foreach(Dictionary<State<SymbolType>, List<State<SymbolType>>> ss in bind)
+                List<List<State>> NewListParts = new List<List<State>>();
+                foreach(Dictionary<State, List<State>> ss in bind)
                 {
-                    Dictionary<List<State<SymbolType>>, List<State<SymbolType>>> bindbind = new Dictionary<List<State<SymbolType>>, List<State<SymbolType>>>();
-                    foreach(List<State<SymbolType>> sss in ss.Values.ToList())
+                    Dictionary<List<State>, List<State>> bindbind = new Dictionary<List<State>, List<State>>();
+                    foreach(List<State> sss in ss.Values.ToList())
                     {
-                        bindbind.Add(sss, new List<State<SymbolType>>());
+                        bindbind.Add(sss, new List<State>());
                     }
-                    foreach(State<SymbolType> sss in ss.Keys)
+                    foreach(State sss in ss.Keys)
                     {
                         bindbind[ListParts.First(x => x.Contains(sss.Follow[s][0]))].Add(sss);
                     }
@@ -147,10 +147,10 @@ namespace FiniteAuto
                 ListParts = NewListParts;
             }
 
-            FiniteAutomaton<SymbolType> Minimized = ClearFiniteAutomaton(Symbols.ToList());
-            foreach(List<State<SymbolType>> s in ListParts)
+            FiniteAutomaton Minimized = ClearFiniteAutomaton(Symbols.ToList());
+            foreach(List<State> s in ListParts)
             {
-                Minimized.AddStateWithoutLimitations()
+                //Minimized.AddStateWithoutLimitations()
             }
             return Minimized;
         }
