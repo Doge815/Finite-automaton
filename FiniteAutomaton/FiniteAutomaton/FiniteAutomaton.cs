@@ -1,12 +1,11 @@
 ﻿#pragma warning disable RCS1036, RCS1037
 using System.Linq;
-namespace FiniteAutomaton
+namespace FiniteAuto
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    public class FiniteAutomaton <SymbolType> : ICloneable
-    where SymbolType : IComparable<SymbolType>, IEquatable<SymbolType>
+    public class FiniteAutomaton : ICloneable
     {
         internal List<State<SymbolType>> States { get; }
         public State<SymbolType> StartState {get => States[0];}
