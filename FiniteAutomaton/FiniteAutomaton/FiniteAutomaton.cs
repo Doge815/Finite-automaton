@@ -7,32 +7,33 @@ namespace FiniteAuto
     using System.Linq;
     public class FiniteAutomaton : ICloneable
     {
-        internal List<State<SymbolType>> States { get; }
-        public State<SymbolType> StartState {get => States[0];}
-        public IReadOnlyList<SymbolType> Symbols{get;}
+        Aplphabet aplphabet = null;
+        internal List<State> States { get; }
+        public State StartState {get => States[0];}
+        public IReadOnlyList<aplphababet.t> Symbols{get;}
 
         public FiniteAutomaton(List<SymbolType> s)
         {
             Symbols = s ?? throw new ArgumentNullException(nameof(s));
-            States = new List<State<SymbolType>> { new State<SymbolType>(StateType.Start, this) };
+            States = new List<State> { new State(this) };
         }
 
-        public State<SymbolType> AddState(StateType type)
+        public State AddState(StateType type)
         {
             if((type & StateType.Start) != 0) Environment.FailFast("");
             return AddStateWithoutLimitations(type);
         }
 
-        private State<SymbolType> AddStateWithoutLimitations(StateType type)
+        private State AddStateWithoutLimitations(StateType type)
         {
             var state = new State<SymbolType>(type, this);
             States.Add(state);
             return state;
         }
 
-        private FiniteAutomaton<SymbolType> ClearFiniteAutomaton(List<SymbolType> s)
+        private FiniteAutomaton ClearFiniteAutomaton(List<SymbolType> s)
         {
-            FiniteAutomaton<SymbolType> newAutomaton = new FiniteAutomaton<SymbolType>(s);
+            FiniteAutomaton newAutomaton = new FiniteAutomaton(s);
             newAutomaton.States.Clear();
             return newAutomaton;
         }
@@ -53,7 +54,7 @@ namespace FiniteAuto
 
             for(int i = 0; i < States.Count; i++)
             {
-                State<SymbolType> s = States[i];
+                State s = States[i];
                 table[0,i+1] = s.Name;
                 for(int u = 0; u < Symbols.Count; u++)
                 {
@@ -65,13 +66,13 @@ namespace FiniteAuto
             return table;
         }
 
-        private (FiniteAutomaton<SymbolType>, Dictionary<State<SymbolType>, State<SymbolType>>) DeepCopyFull()
+        private (FiniteAutomaton, Dictionary<State, State>) DeepCopyFull()
         {
-            FiniteAutomaton<SymbolType> Copy = ClearFiniteAutomaton(Symbols.ToList());
-            Dictionary<State<SymbolType>, State<SymbolType>> Translate = new Dictionary<State<SymbolType>, State<SymbolType>>();
-            foreach(State<SymbolType> s in States)
+            FiniteAutomaton Copy = ClearFiniteAutomaton(Symbols.ToList());
+            Dictionary<State, State> Translate = new Dictionary<State, State>();
+            foreach(State s in States)
             {
-                State<SymbolType> ss = Copy.AddStateWithoutLimitations(s.Type);
+                State ss = Copy.AddStateWithoutLimitations(s.Type);
                 Translate.Add(s, ss);
             }
             States

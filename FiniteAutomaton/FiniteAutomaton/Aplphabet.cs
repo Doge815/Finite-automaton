@@ -3,13 +3,13 @@ namespace FiniteAuto
 {
     using System;
     using System.Linq;
-    public class Aplphabet <SymbolType>
-    where SymbolType : IComparable<SymbolType>, IEquatable<SymbolType>
+    public class Aplphabet
     {
-        private List<SymbolType> symbols;
-        public List<SymbolType> Symbols {get => symbols.ToList(); }
+        public Type t;
+        private List<t> symbols;
+        public List<t> Symbols {get => symbols.ToList(); }
 
-        public Aplphabet (IEnumerable<SymbolType> symbol)
+        public Aplphabet (IEnumerable<t> symbol)
         {
             symbols = symbol.ToList();
         }
