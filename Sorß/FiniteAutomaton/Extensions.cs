@@ -63,10 +63,9 @@ namespace FiniteAuto
 
             string GetBlock(string content, bool isLeft = false)
             {
-                string whiteSpace = new string(' ', (int)Math.Floor((maxSize - content.Length) / 2d));
                 string separator = isLeft ? string.Empty : SeparatorX.ToString();
 
-                return separator + whiteSpace + content + whiteSpace;
+                return separator + new string(' ', (int)Math.Ceiling((maxSize - content.Length) / 2d)) + content + new string(' ', (int)Math.Floor((maxSize - content.Length) / 2d));
             }
         }
 

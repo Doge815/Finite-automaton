@@ -13,7 +13,14 @@ namespace FiniteAuto
 
         public Alphabet(IEnumerable<object> values)
         {
-            _symbols = values.ToList();
+            _symbols = new List<object>();
+            Type t = null;
+            foreach(object o in values)
+            {
+                if(t == null) t = o.GetType();
+                if(t != o.GetType()) throw new ArgumentException(nameof(values));
+                _symbols.Add(o);
+            }
         }
     }
 }

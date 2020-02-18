@@ -8,7 +8,7 @@
     {
         private static void Main()
         {
-            Alphabet a = new Alphabet(new List<object> { 'a', 'b', 'c', 3 });
+            Alphabet a = new Alphabet(new List<object> { 'a', 'b', 'c' });
             FiniteAutomaton automaton = new FiniteAutomaton(a);
             State two = automaton.AddState();
             State one = automaton.AddState();
