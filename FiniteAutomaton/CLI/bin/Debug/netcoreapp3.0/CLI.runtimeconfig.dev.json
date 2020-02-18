@@ -1,8 +1,0 @@
-{
-  "runtimeOptions": {
-    "additionalProbingPaths": [
-      "/home/doge815/.dotnet/store/|arch|/|tfm|",
-      "/home/doge815/.nuget/packages"
-    ]
-  }
-}
