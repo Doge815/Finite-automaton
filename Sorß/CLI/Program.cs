@@ -10,9 +10,11 @@
         {
             Alphabet a = new Alphabet(new List<object> { 'a', 'b', 'c' });
             FiniteAutomaton automaton = new FiniteAutomaton(a);
+
             State two = automaton.AddState();
             State one = automaton.AddState();
             State three = automaton.AddState();
+
             three.AddFollow(one, 'a');
             three.AddFollow(two, 'b');
             one.AddFollow(two, 'a');
@@ -21,7 +23,10 @@
             two.AddFollow(three, 'a');
             two.AddFollow(two, 'a');
 
+            FiniteAutomaton minimized = automaton.Minimize();
+
             Console.WriteLine(automaton.GetTable() + "\n");
+            Console.WriteLine(minimized.GetTable() + "\n");
         }
     }
 }

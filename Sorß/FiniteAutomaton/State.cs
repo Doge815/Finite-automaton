@@ -24,11 +24,11 @@ namespace FiniteAuto
 
         public void AddFollow(State s, object o)
         {
-            if (s.Automaton != Automaton) Environment.FailFast("Alphabet does not contain the added symbol.");
-            if (!_alphabet.Symbols.Contains(o)) Environment.FailFast("Target State already contained");
+            if (s.Automaton != Automaton) throw new ArgumentException();
+            if (!_alphabet.Symbols.Contains(o)) throw new ArgumentException();
 
             if (!Follow.TryGetValue(o, out var list)) Follow.Add(o, list = new List<State>());
-            else if (Follow[o].Contains(s)) Environment.FailFast("Target State in wrong automaton.");
+            else if (Follow[o].Contains(s)) throw new ArgumentException();
 
             list.Add(s);
         }

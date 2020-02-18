@@ -1,7 +1,6 @@
 ﻿namespace FiniteAuto
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -74,11 +73,11 @@
             }
             States
                 .ForEach(z => Alphabet.Symbols
-            .Where(y => z.Follow.ContainsKey(y))
-            .ToList()
-            .ForEach(x => z.Follow[x]
-        .ForEach(w => Translate[z]
-    .AddFollow(Translate[w], x))));
+                .Where(y => z.Follow.ContainsKey(y))
+                .ToList()
+                .ForEach(x => z.Follow[x]
+                .ForEach(w => Translate[z]
+                .AddFollow(Translate[w], x))));
 
             return (Copy, Translate);
         }
