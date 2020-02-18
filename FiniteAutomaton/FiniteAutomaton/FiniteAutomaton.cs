@@ -144,6 +144,10 @@ namespace FiniteAuto
             {
                 bindd.Add(Minimized.AddState(), s);
             }
+            foreach(State t in Minimized.States)
+            {
+                
+            }
             return Minimized;
         }
     }
