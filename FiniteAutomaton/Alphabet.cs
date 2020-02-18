@@ -6,13 +6,13 @@ namespace FiniteAuto
     using System.Collections;
     using System.Linq;
 
-    public class Alphabet<TSymbol>
+    public class Alphabet
         where TSymbol : notnull
     {
-        private readonly List<TSymbol> _symbols;
-        public IReadOnlyList<TSymbol> Symbols => _symbols;
+        private readonly List<object> _symbols;
+        public IReadOnlyList<object> Symbols => _symbols;
 
-        public Alphabet(IEnumerable<TSymbol> values)
+        public Alphabet(IEnumerable values)
         {
             _symbols = values.ToList();
         }

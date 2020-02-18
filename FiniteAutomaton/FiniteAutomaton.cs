@@ -5,32 +5,32 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class FiniteAutomaton<TSymbol> : ICloneable
+    public class FiniteAutomaton : ICloneable
         where TSymbol : notnull
     {
-        internal Alphabet<TSymbol> Alphabet { get; }
-        internal List<State<TSymbol>> States { get; }
+        internal Alphabet Alphabet { get; }
+        internal List<State> States { get; }
 
-        private State<TSymbol> _startState;
-        public State<TSymbol> StartState
+        private State _startState;
+        public State StartState
         {
             get => _startState;
             set => _startState = States.Contains(value) ? value : throw new ArgumentException();
         }
 
-        private readonly List<State<TSymbol>> _endStates;
-        public IReadOnlyList<State<TSymbol>> EndStates => _endStates;
+        private readonly List<State> _endStates;
+        public IReadOnlyList<State> EndStates => _endStates;
 
-        public FiniteAutomaton(Alphabet<TSymbol> a)
+        public FiniteAutomaton(Alphabet a)
         {
             Alphabet = a;
-            States = new List<State<TSymbol>>();
-            _endStates = new List<State<TSymbol>>();
+            States = new List<State>();
+            _endStates = new List<State>();
         }
 
-        public State<TSymbol> AddState()
+        public State AddState()
         {
-            var state = new State<TSymbol>(this, Alphabet);
+            var state = new State(this, Alphabet);
             States.Add(state);
             return state;
         }
@@ -51,7 +51,7 @@
 
             for (int i = 0; i < States.Count; i++)
             {
-                State<TSymbol> s = States[i];
+                State s = States[i];
                 table[0, i + 1] = s.Name;
                 for (int u = 0; u < Alphabet.Symbols.Count; u++)
                 {
@@ -63,13 +63,13 @@
             return table;
         }
 
-        private (FiniteAutomaton<TSymbol>, Dictionary<State<TSymbol>, State<TSymbol>>) DeepCopyFull()
+        private (FiniteAutomaton, Dictionary<State, State>) DeepCopyFull()
         {
-            FiniteAutomaton<TSymbol> Copy = new FiniteAutomaton<TSymbol>(Alphabet);
-            Dictionary<State<TSymbol>, State<TSymbol>> Translate = new Dictionary<State<TSymbol>, State<TSymbol>>();
-            foreach (State<TSymbol> s in States)
+            FiniteAutomaton Copy = new FiniteAutomaton(Alphabet);
+            Dictionary<State, State> Translate = new Dictionary<State, State>();
+            foreach (State s in States)
             {
-                State<TSymbol> ss = Copy.AddState();
+                State ss = Copy.AddState();
                 Translate.Add(s, ss);
             }
             States
@@ -83,17 +83,17 @@
             return (Copy, Translate);
         }
 
-        public FiniteAutomaton<TSymbol> DeepCopy() => DeepCopyFull().Item1;
+        public FiniteAutomaton DeepCopy() => DeepCopyFull().Item1;
 
         public object Clone() => DeepCopy();
 
-        public FiniteAutomaton<TSymbol> ConvertToDFA()
+        public FiniteAutomaton ConvertToDFA()
         {
-            FiniteAutomaton<TSymbol> nfa = DeepCopy();
+            FiniteAutomaton nfa = DeepCopy();
 
-            var dfa = new FiniteAutomaton<TSymbol>(Alphabet);
+            var dfa = new FiniteAutomaton(Alphabet);
 
-            var Map = new Dictionary<State<TSymbol>, List<State<TSymbol>>>();
+            var Map = new Dictionary<State, List<State>>();
 
             while (true)
             {
@@ -104,7 +104,7 @@
                     if (!Map.ContainsKey(state))
                     {
                         finished = false;
-                        State<TSymbol> s = dfa.AddState();
+                        State s = dfa.AddState();
                     }
                 }
 
@@ -114,9 +114,9 @@
             return dfa;
         }
 
-        public FiniteAutomaton<TSymbol> Minimize()
+        public FiniteAutomaton Minimize()
         {
-            var partitions = new List<State<TSymbol>[]?> { EndStates.ToArray(), States.Except(EndStates).ToArray(), null };
+            var partitions = new List<State[]?> { EndStates.ToArray(), States.Except(EndStates).ToArray(), null };
 
             while (true)
             {
@@ -124,13 +124,13 @@
 
                 foreach (TSymbol s in Alphabet.Symbols)
                 {
-                    var newPartitions = new List<State<TSymbol>[]?> { null };
+                    var newPartitions = new List<State[]?> { null };
 
                     foreach (var partition in partitions)
                     {
                         if (partition == null || partition.Length == 1) continue;
 
-                        var statesTargetingPartition = partitions.ToDictionary(x => x, _ => new List<State<TSymbol>>());
+                        var statesTargetingPartition = partitions.ToDictionary(x => x, _ => new List<State>());
                         foreach (var state in partition)
                         {
                             var followSet = state.Follow[s];
@@ -165,7 +165,7 @@
                 if (finished) break;
             }
 
-            var minimizedDfa = new FiniteAutomaton<TSymbol>(Alphabet);
+            var minimizedDfa = new FiniteAutomaton(Alphabet);
             var statesFromPartitions = partitions.ToDictionary(x => x, _ => minimizedDfa.AddState());
 
             foreach (var stateAndPartition in statesFromPartitions)
