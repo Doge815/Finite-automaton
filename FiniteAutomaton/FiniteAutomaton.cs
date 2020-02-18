@@ -6,7 +6,6 @@
     using System.Linq;
 
     public class FiniteAutomaton : ICloneable
-        where TSymbol : notnull
     {
         internal Alphabet Alphabet { get; }
         internal List<State> States { get; }
@@ -122,7 +121,7 @@
             {
                 bool finished = true;
 
-                foreach (TSymbol s in Alphabet.Symbols)
+                foreach (object s in Alphabet.Symbols)
                 {
                     var newPartitions = new List<State[]?> { null };
 
@@ -170,7 +169,7 @@
 
             foreach (var stateAndPartition in statesFromPartitions)
             {
-                foreach (TSymbol s in Alphabet.Symbols)
+                foreach (object s in Alphabet.Symbols)
                 {
                     var partition = stateAndPartition.Key;
                     var follow = partition?[0].Follow[s][0];

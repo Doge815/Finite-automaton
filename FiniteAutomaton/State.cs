@@ -5,7 +5,6 @@ namespace FiniteAuto
     using System.Linq;
 
     public class State
-        where TSymbol : notnull
     {
         private string? _name;
         public string Name => _name ??= Automaton.States.IndexOf(this).ToString();
@@ -13,17 +12,17 @@ namespace FiniteAuto
         private readonly Alphabet _alphabet;
         private FiniteAutomaton Automaton { get; }
 
-        internal Dictionary<TSymbol, List<State>> Follow { get; }
+        internal Dictionary<object, List<State>> Follow { get; }
 
         internal State(FiniteAutomaton e, Alphabet a, string? name = null)
         {
             Automaton = e;
             _alphabet = a;
-            Follow = new Dictionary<TSymbol, List<State>>();
+            Follow = new Dictionary<object, List<State>>();
             _name = name;
         }
 
-        public void AddFollow(State s, TSymbol o)
+        public void AddFollow(State s, object o)
         {
             if (s.Automaton != Automaton) Environment.FailFast("Alphabet does not contain the added symbol.");
             if (!_alphabet.Symbols.Contains(o)) Environment.FailFast("Target State already contained");
