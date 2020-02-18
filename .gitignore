@@ -1,6 +1,6 @@
 
-# Created by https://www.gitignore.io/api/csharp,visualstudio,visualstudiocode,latex
-# Edit at https://www.gitignore.io/?templates=csharp,visualstudio,visualstudiocode,latex
+# Created by https://www.gitignore.io/api/latex,csharp,visualstudio,visualstudiocode
+# Edit at https://www.gitignore.io/?templates=latex,csharp,visualstudio,visualstudiocode
 
 ### Csharp ###
 ## Ignore Visual Studio temporary files, build results, and
@@ -73,7 +73,6 @@ StyleCopReport.xml
 *_p.c
 *_h.h
 *.ilk
-*.meta
 *.obj
 *.iobj
 *.pch
@@ -789,5 +788,4 @@ TSWLatexianTemp*
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 
-# End of https://www.gitignore.io/api/csharp,visualstudio,visualstudiocode,latex
-/BwInf2020.zip
+# End of https://www.gitignore.io/api/latex,csharp,visualstudio,visualstudiocode
