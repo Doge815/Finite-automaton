@@ -1,18 +1,14 @@
-﻿#pragma warning disable RCS1037
-using System.Collections;
-namespace CLI
+﻿namespace CLI
 {
-    using System;
-    using System.Linq;
     using FiniteAuto;
-    using System.IO;
+    using System;
     using System.Collections.Generic;
 
     public static class Program
     {
         private static void Main()
         {
-            Alphabet a = new Alphabet(new List<object>{'a', 'b', 'c', 3});
+            Alphabet a = new Alphabet(new List<object> { 'a', 'b', 'c', 3 });
             FiniteAutomaton automaton = new FiniteAutomaton(a);
             State two = automaton.AddState();
             State one = automaton.AddState();
@@ -24,8 +20,8 @@ namespace CLI
             one.AddFollow(one, 'b');
             two.AddFollow(three, 'a');
             two.AddFollow(two, 'a');
-            
-            Console.WriteLine(automaton.GetTable()+"\n");
+
+            Console.WriteLine(automaton.GetTable() + "\n");
         }
     }
 }
