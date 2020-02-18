@@ -14,7 +14,7 @@ namespace FiniteAuto
         public Alphabet(IEnumerable<object> values)
         {
             _symbols = new List<object>();
-            Type t = null;
+            Type? t = null;
             foreach(object o in values)
             {
                 if(t == null) t = o.GetType();

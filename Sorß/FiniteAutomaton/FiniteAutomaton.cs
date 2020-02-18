@@ -10,11 +10,12 @@
         internal Alphabet Alphabet { get; }
         internal List<State> States { get; }
 
-        private State _startState;
-        public State StartState
+        private State? _startState = null;
+
+        public State? StartState
         {
             get => _startState;
-            set => _startState = States.Contains(value) ? value : throw new ArgumentException();
+            set => _startState = States.Contains(value ?? throw new ArgumentNullException()) ? value : throw new ArgumentException();
         }
 
         private readonly List<State> _endStates;
