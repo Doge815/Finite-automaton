@@ -17,7 +17,7 @@ namespace FiniteAuto
             {
                 symbols.Add(o);
                 if(t == null) t = o.GetType();
-                if(t != o.GetType()) throw new ArgumentException();
+                if(t != o.GetType()) throw new ArgumentException(nameof(values) + " contains diffrent types");
             }
             T = t;
         }

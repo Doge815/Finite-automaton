@@ -1,5 +1,4 @@
 ﻿#pragma warning disable RCS1036, RCS1037
-using System.Linq;
 namespace FiniteAuto
 {
     using System;
@@ -9,7 +8,9 @@ namespace FiniteAuto
     {
         internal Alphabet alphabet { get; }
         internal List<State> States { get; }
-        public State StartState { get; }
+
+        private State startState = null;
+        public State StartState { get => startState; set { if(States.Contains(value)) startState = value; else throw new ArgumentException();} }
         private List<State> endStates;
         public List<State> EndStates { get => endStates.ToList(); }
 
@@ -27,7 +28,7 @@ namespace FiniteAuto
             return state;
         }
 
-        public string GetTable() => Extensions.TableFormat(TableData());
+        public string GetTable() => TableData().TableFormat();
     
         private string[,] TableData()
         {

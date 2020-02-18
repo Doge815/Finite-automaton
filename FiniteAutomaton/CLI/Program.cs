@@ -12,22 +12,20 @@ namespace CLI
     {
         private static void Main()
         {
-            Alphabet a = new Alphabet(new List<object>{'a', 'b', 'c'});
+            Alphabet a = new Alphabet(new List<object>{'a', 'b', 'c', 3});
             FiniteAutomaton automaton = new FiniteAutomaton(a);
-            State startState = automaton.StartState;
             State two = automaton.AddState();
             State one = automaton.AddState();
-            startState.AddFollow(one, 'a');
-            startState.AddFollow(two, 'b');
+            State three = automaton.AddState();
+            three.AddFollow(one, 'a');
+            three.AddFollow(two, 'b');
             one.AddFollow(two, 'a');
             one.AddFollow(one, 'a');
             one.AddFollow(one, 'b');
-            two.AddFollow(startState, 'a');
+            two.AddFollow(three, 'a');
             two.AddFollow(two, 'a');
             
-            //FiniteAutomaton<char> DFA = automaton.ConvertToDFA();
             Console.WriteLine(automaton.GetTable()+"\n");
-            //Console.WriteLine(DFA.GetTable()+"\ndone");
         }
     }
 }
