@@ -4,31 +4,34 @@ namespace FiniteAuto
     using System.Collections.Generic;
     using System.Linq;
 
-    public class State
+    public class State<TSymbol>
+        where TSymbol : notnull
     {
-        readonly private string? name;
-        public string Name { get => name ?? Automaton.States.IndexOf(this).ToString(); }
+        private string? _name;
+        public string Name => _name ??= Automaton.States.IndexOf(this).ToString();
 
-        private Alphabet aplphabet;
-        private FiniteAutomaton Automaton { get; }
+        private readonly Alphabet<TSymbol> _alphabet;
+        private FiniteAutomaton<TSymbol> Automaton { get; }
 
-        internal Dictionary<object, List<State>> Follow { get; }
+        internal Dictionary<TSymbol, List<State<TSymbol>>> Follow { get; }
 
-        internal State(FiniteAutomaton e, Alphabet a, string? name = null)
+        internal State(FiniteAutomaton<TSymbol> e, Alphabet<TSymbol> a, string? name = null)
         {
             Automaton = e;
-            aplphabet = a;
-            Follow = new Dictionary<object, List<State>>();
-            this.name = name;
+            _alphabet = a;
+            Follow = new Dictionary<TSymbol, List<State<TSymbol>>>();
+            _name = name;
         }
 
-        public void AddFollow(State s, object o)
+        public void AddFollow(State<TSymbol> s, TSymbol o)
         {
-            if (s.Automaton != Automaton) Environment.FailFast("");
-            if (!aplphabet.Symbols.Any(x => x.Equals(o))) Environment.FailFast("");
-            if (!Follow.ContainsKey(o)) Follow.Add(o, new List<State>());
-            if (Follow[o].Contains(s)) Environment.FailFast("");
-            Follow[o].Add(s);
+            if (s.Automaton != Automaton) Environment.FailFast("Alphabet does not contain the added symbol.");
+            if (!_alphabet.Symbols.Contains(o)) Environment.FailFast("Target State already contained");
+
+            if (!Follow.TryGetValue(o, out var list)) Follow.Add(o, list = new List<State<TSymbol>>());
+            else if (Follow[o].Contains(s)) Environment.FailFast("Target State in wrong automaton.");
+
+            list.Add(s);
         }
     }
 }

@@ -1,31 +1,36 @@
-﻿#pragma warning disable RCS1036, RCS1037
-
-namespace FiniteAuto
+﻿namespace FiniteAuto
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
-    public class FiniteAutomaton : ICloneable
+    public class FiniteAutomaton<TSymbol> : ICloneable
+        where TSymbol : notnull
     {
-        internal Alphabet alphabet { get; }
-        internal List<State> States { get; }
+        internal Alphabet<TSymbol> Alphabet { get; }
+        internal List<State<TSymbol>> States { get; }
 
-        private State startState = null;
-        public State StartState { get => startState; set { if (States.Contains(value)) startState = value; else throw new ArgumentException(); } }
-        private List<State> endStates;
-        public List<State> EndStates { get => endStates.ToList(); }
-
-        public FiniteAutomaton(Alphabet a)
+        private State<TSymbol> _startState;
+        public State<TSymbol> StartState
         {
-            alphabet = a;
-            States = new List<State>();
-            endStates = new List<State>();
+            get => _startState;
+            set => _startState = States.Contains(value) ? value : throw new ArgumentException();
         }
 
-        public State AddState()
+        private readonly List<State<TSymbol>> _endStates;
+        public IReadOnlyList<State<TSymbol>> EndStates => _endStates;
+
+        public FiniteAutomaton(Alphabet<TSymbol> a)
         {
-            var state = new State(this, alphabet);
+            Alphabet = a;
+            States = new List<State<TSymbol>>();
+            _endStates = new List<State<TSymbol>>();
+        }
+
+        public State<TSymbol> AddState()
+        {
+            var state = new State<TSymbol>(this, Alphabet);
             States.Add(state);
             return state;
         }
@@ -36,21 +41,21 @@ namespace FiniteAuto
         {
             const string title = "State";
 
-            string[,] table = new string[alphabet.Symbols.Count + 1, States.Count + 1];
+            string[,] table = new string[Alphabet.Symbols.Count + 1, States.Count + 1];
             table[0, 0] = title;
 
-            for (int i = 0; i < alphabet.Symbols.Count; i++)
+            for (int i = 0; i < Alphabet.Symbols.Count; i++)
             {
-                table[i + 1, 0] = alphabet.Symbols[i].ToString();
+                table[i + 1, 0] = Alphabet.Symbols[i].ToString();
             }
 
             for (int i = 0; i < States.Count; i++)
             {
-                State s = States[i];
+                State<TSymbol> s = States[i];
                 table[0, i + 1] = s.Name;
-                for (int u = 0; u < alphabet.Symbols.Count; u++)
+                for (int u = 0; u < Alphabet.Symbols.Count; u++)
                 {
-                    table[u + 1, i + 1] = s.Follow.TryGetValue(alphabet.Symbols[u], out List<State> follow)
+                    table[u + 1, i + 1] = s.Follow.TryGetValue(Alphabet.Symbols[u], out var follow)
                         ? string.Join(", ", follow.Select(x => x.Name))
                         : "-";
                 }
@@ -58,17 +63,17 @@ namespace FiniteAuto
             return table;
         }
 
-        private (FiniteAutomaton, Dictionary<State, State>) DeepCopyFull()
+        private (FiniteAutomaton<TSymbol>, Dictionary<State<TSymbol>, State<TSymbol>>) DeepCopyFull()
         {
-            FiniteAutomaton Copy = new FiniteAutomaton(alphabet);
-            Dictionary<State, State> Translate = new Dictionary<State, State>();
-            foreach (State s in States)
+            FiniteAutomaton<TSymbol> Copy = new FiniteAutomaton<TSymbol>(Alphabet);
+            Dictionary<State<TSymbol>, State<TSymbol>> Translate = new Dictionary<State<TSymbol>, State<TSymbol>>();
+            foreach (State<TSymbol> s in States)
             {
-                State ss = Copy.AddState();
+                State<TSymbol> ss = Copy.AddState();
                 Translate.Add(s, ss);
             }
             States
-                .ForEach(z => alphabet.Symbols
+                .ForEach(z => Alphabet.Symbols
             .Where(y => z.Follow.ContainsKey(y))
             .ToList()
             .ForEach(x => z.Follow[x]
@@ -78,74 +83,105 @@ namespace FiniteAuto
             return (Copy, Translate);
         }
 
-        public FiniteAutomaton DeepCopy() => DeepCopyFull().Item1;
+        public FiniteAutomaton<TSymbol> DeepCopy() => DeepCopyFull().Item1;
 
         public object Clone() => DeepCopy();
 
-        public FiniteAutomaton ConvertToDFA()
+        public FiniteAutomaton<TSymbol> ConvertToDFA()
         {
-            FiniteAutomaton NFA = DeepCopy();
+            FiniteAutomaton<TSymbol> nfa = DeepCopy();
 
-            FiniteAutomaton DFA = new FiniteAutomaton(alphabet);
+            var dfa = new FiniteAutomaton<TSymbol>(Alphabet);
 
-            Dictionary<State, List<State>> Map = new Dictionary<State, List<State>>();
-            for (bool finished = false; !finished;)
+            var Map = new Dictionary<State<TSymbol>, List<State<TSymbol>>>();
+
+            while (true)
             {
-                finished = true;
-                foreach (State D in DFA.States)
+                bool finished = true;
+
+                foreach (var state in dfa.States)
                 {
-                    if (!Map.ContainsKey(D))
+                    if (!Map.ContainsKey(state))
                     {
                         finished = false;
-                        State s = DFA.AddState();
+                        State<TSymbol> s = dfa.AddState();
                     }
                 }
+
+                if (finished) break;
             }
-            return DFA;
+
+            return dfa;
         }
 
-        public FiniteAutomaton Minimize()
+        public FiniteAutomaton<TSymbol> Minimize()
         {
-            List<List<State>> ListParts = new List<List<State>> { new List<State>(), new List<State>() };
-            foreach (State s in States)
+            var partitions = new List<State<TSymbol>[]?> { EndStates.ToArray(), States.Except(EndStates).ToArray(), null };
+
+            while (true)
             {
-                ListParts[EndStates.Contains(s) ? 0 : 1].Add(s);
-            }
-            foreach (object s in alphabet.Symbols)
-            {
-                List<Dictionary<State, List<State>>> bind = new List<Dictionary<State, List<State>>>();
-                foreach (List<State> ss in ListParts)
+                bool finished = true;
+
+                foreach (TSymbol s in Alphabet.Symbols)
                 {
-                    bind.Add(new Dictionary<State, List<State>>());
-                    foreach (State sss in ss)
+                    var newPartitions = new List<State<TSymbol>[]?> { null };
+
+                    foreach (var partition in partitions)
                     {
-                        bind.Last().Add(sss, ListParts.First(x => x.Contains(sss)));
+                        if (partition == null || partition.Length == 1) continue;
+
+                        var statesTargetingPartition = partitions.ToDictionary(x => x, _ => new List<State<TSymbol>>());
+                        foreach (var state in partition)
+                        {
+                            var followSet = state.Follow[s];
+
+                            if (followSet.Count > 1) Environment.FailFast("Exceptional failure during P/Invoke.");
+
+                            if (followSet.Count == 0)
+                            {
+                                statesTargetingPartition[null].Add(state);
+                            }
+                            else
+                            {
+                                var follow = followSet[0];
+                                var targetedPartition = partitions.FindPartition(follow);
+                                statesTargetingPartition[targetedPartition].Add(state);
+                            }
+                        }
+
+                        var addedPartitions = statesTargetingPartition.Values
+                            .Select(x => x.ToArray())
+                            .Where(x => x.Length > 0)
+                            .ToList();
+
+                        if (addedPartitions.Count > 1) finished = false;
+
+                        newPartitions.AddRange(addedPartitions);
                     }
+
+                    partitions = newPartitions;
                 }
-                List<List<State>> NewListParts = new List<List<State>>();
-                foreach (Dictionary<State, List<State>> ss in bind)
-                {
-                    Dictionary<List<State>, List<State>> bindbind = new Dictionary<List<State>, List<State>>();
-                    foreach (List<State> sss in ss.Values.ToList())
-                    {
-                        bindbind.Add(sss, new List<State>());
-                    }
-                    foreach (State sss in ss.Keys)
-                    {
-                        bindbind[ListParts.First(x => x.Contains(sss.Follow[s][0]))].Add(sss);
-                    }
-                    NewListParts.AddRange(bindbind.Values);
-                }
-                ListParts = NewListParts;
+
+                if (finished) break;
             }
 
-            FiniteAutomaton Minimized = new FiniteAutomaton(alphabet);
-            Dictionary<State, List<State>> bindd = new Dictionary<State, List<State>>();
-            foreach (List<State> s in ListParts)
+            var minimizedDfa = new FiniteAutomaton<TSymbol>(Alphabet);
+            var statesFromPartitions = partitions.ToDictionary(x => x, _ => minimizedDfa.AddState());
+
+            foreach (var stateAndPartition in statesFromPartitions)
             {
-                bindd.Add(Minimized.AddState(), s);
+                foreach (TSymbol s in Alphabet.Symbols)
+                {
+                    var partition = stateAndPartition.Key;
+                    var follow = partition?[0].Follow[s][0];
+                    var followPartition = follow == null ? null : partitions.FindPartition(follow);
+                    var followState = statesFromPartitions[followPartition];
+
+                    stateAndPartition.Value.AddFollow(followState, s);
+                }
             }
-            return Minimized;
+
+            return minimizedDfa;
         }
     }
 }

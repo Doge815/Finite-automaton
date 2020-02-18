@@ -3,25 +3,18 @@ using System.Collections.Generic;
 namespace FiniteAuto
 {
     using System;
+    using System.Collections;
     using System.Linq;
 
-    public class Alphabet
+    public class Alphabet<TSymbol>
+        where TSymbol : notnull
     {
-        public Type T;
-        private readonly List<object> symbols;
-        public List<object> Symbols { get => symbols.ToList(); }
+        private readonly List<TSymbol> _symbols;
+        public IReadOnlyList<TSymbol> Symbols => _symbols;
 
-        public Alphabet(IEnumerable<object> values)
+        public Alphabet(IEnumerable<TSymbol> values)
         {
-            Type t = null;
-            symbols = new List<object>();
-            foreach (object o in values)
-            {
-                symbols.Add(o);
-                if (t == null) t = o.GetType();
-                if (t != o.GetType()) throw new ArgumentException(nameof(values) + " contäins different types");
-            }
-            T = t;
+            _symbols = values.ToList();
         }
     }
 }
