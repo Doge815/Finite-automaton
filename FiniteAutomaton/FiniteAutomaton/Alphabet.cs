@@ -6,7 +6,7 @@ namespace FiniteAuto
     public class Alphabet
     {
         public Type T;
-        private List<object> symbols;
+        private readonly List<object> symbols;
         public List<object> Symbols {get => symbols.ToList(); }
 
         public Alphabet (IEnumerable<object> values)
@@ -17,7 +17,7 @@ namespace FiniteAuto
             {
                 symbols.Add(o);
                 if(t == null) t = o.GetType();
-                if(t != o.GetType()) throw new ArgumentException(nameof(values) + " contains diffrent types");
+                if(t != o.GetType()) throw new ArgumentException(nameof(values) + " contäins different types");
             }
             T = t;
         }

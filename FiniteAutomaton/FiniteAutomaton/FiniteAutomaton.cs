@@ -139,9 +139,10 @@ namespace FiniteAuto
             }
 
             FiniteAutomaton Minimized = new FiniteAutomaton(alphabet);
+            Dictionary<State, List<State>> bindd = new Dictionary<State, List<State>>();
             foreach(List<State> s in ListParts)
             {
-                //Minimized.AddStateWithoutLimitations()
+                bindd.Add(Minimized.AddState(), s);
             }
             return Minimized;
         }
