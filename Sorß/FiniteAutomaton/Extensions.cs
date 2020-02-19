@@ -77,7 +77,13 @@ namespace FiniteAuto
         //    list.Add(value);
         //}
 
-        public static T[]? FindPartition<T>(this IEnumerable<T[]?> partitions, T element) =>
-            partitions.FirstOrDefault(x => x?.Contains(element) == true);
+        public static T[] FindPartition<T>(this IEnumerable<T[]> partitions, T element) where T : notnull =>
+            partitions.FirstOrDefault(x => x.Contains(element))
+            ?? throw new KeyNotFoundException(
+                "Could not find partition for " + element
+                + " in " + partitions.ToStringPartition());
+
+        public static string ToStringPartition<T>(this IEnumerable<IEnumerable<T>> partitions) =>
+            "{ " + string.Join(", ", partitions.Select(x => "{ " + string.Join(", ", x) + " }")) + " }";
     }
 }

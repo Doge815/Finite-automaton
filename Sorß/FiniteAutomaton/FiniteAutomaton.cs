@@ -27,11 +27,23 @@
             _endStates = new List<State>();
         }
 
-        public State AddState()
+        public State AddState(string? name = null)
         {
-            var state = new State(this, Alphabet);
+            var state = new State(this, Alphabet, name);
             States.Add(state);
             return state;
+        }
+
+        public void AddEndstate(State state)
+        {
+            if (States.Contains(state))
+            {
+                _endStates.Add(state);
+            }
+            else
+            {
+                throw new ArgumentException(nameof(state));
+            }
         }
 
         public string GetTable() => TableData().TableFormat();
@@ -73,11 +85,11 @@
             }
             States
                 .ForEach(z => Alphabet.Symbols
-                .Where(y => z.Follow.ContainsKey(y))
-                .ToList()
-                .ForEach(x => z.Follow[x]
-                .ForEach(w => Translate[z]
-                .AddFollow(Translate[w], x))));
+                    .Where(y => z.Follow.ContainsKey(y))
+                    .ToList()
+                    .ForEach(x => z.Follow[x]
+                        .ForEach(w => Translate[z]
+                            .AddFollow(x, Translate[w]))));
 
             return (Copy, Translate);
         }
@@ -115,30 +127,34 @@
 
         public FiniteAutomaton Minimize()
         {
-            var partitions = new List<State[]?> { EndStates.ToArray(), States.Except(EndStates).ToArray(), null };
+            var partitions = new List<State[]> { EndStates.ToArray(), States.Except(EndStates).ToArray(), State.GarbagePartition };
 
             while (true)
             {
                 bool finished = true;
 
-                foreach (object s in Alphabet.Symbols)
+                foreach (var s in Alphabet.Symbols)
                 {
-                    var newPartitions = new List<State[]?> { null };
+                    var newPartitions = new List<State[]> { };
 
                     foreach (var partition in partitions)
                     {
-                        if (partition == null || partition.Length == 1) continue;
+                        if (partition == State.GarbagePartition || partition.Length == 1)
+                        {
+                            newPartitions.Add(partition);
+                            continue;
+                        }
 
                         var statesTargetingPartition = partitions.ToDictionary(x => x, _ => new List<State>());
                         foreach (var state in partition)
                         {
-                            var followSet = state.Follow[s];
+                            var followSet = state.GetFollow(s);
 
-                            if (followSet.Count > 1) Environment.FailFast("Exceptional failure during P/Invoke.");
+                            if (followSet.Count > 1) Environment.FailFast("Exceptional failure during P/Invoke. " + string.Join(", ", followSet.Select(x=>x.Name)));
 
                             if (followSet.Count == 0)
                             {
-                                statesTargetingPartition[null].Add(state);
+                                statesTargetingPartition[State.GarbagePartition].Add(state);
                             }
                             else
                             {
@@ -165,18 +181,18 @@
             }
 
             var minimizedDfa = new FiniteAutomaton(Alphabet);
-            var statesFromPartitions = partitions.ToDictionary(x => x, _ => minimizedDfa.AddState());
+            var statesFromPartitions = partitions.ToDictionary(x => x, x => minimizedDfa.AddState($"{{ {string.Join(", ", x.Select(x => x.Name))} }}"));
 
             foreach (var stateAndPartition in statesFromPartitions)
             {
                 foreach (object s in Alphabet.Symbols)
                 {
                     var partition = stateAndPartition.Key;
-                    var follow = partition?[0].Follow[s][0];
-                    var followPartition = follow == null ? null : partitions.FindPartition(follow);
+                    var follow = partition[0].GetFollow(s)[0];
+                    var followPartition = partitions.FindPartition(follow);
                     var followState = statesFromPartitions[followPartition];
 
-                    stateAndPartition.Value.AddFollow(followState, s);
+                    stateAndPartition.Value.AddFollow(s, followState);
                 }
             }
 

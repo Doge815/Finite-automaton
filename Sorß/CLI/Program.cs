@@ -11,17 +11,17 @@
             Alphabet a = new Alphabet(new List<object> { 'a', 'b', 'c' });
             FiniteAutomaton automaton = new FiniteAutomaton(a);
 
-            State two = automaton.AddState();
-            State one = automaton.AddState();
-            State three = automaton.AddState();
+            State s0 = automaton.AddState("0");
+            State s1 = automaton.AddState("1");
+            State s2 = automaton.AddState("2");
 
-            three.AddFollow(one, 'a');
-            three.AddFollow(two, 'b');
-            one.AddFollow(two, 'a');
-            one.AddFollow(one, 'a');
-            one.AddFollow(one, 'b');
-            two.AddFollow(three, 'a');
-            two.AddFollow(two, 'a');
+            s0.AddFollow('a', s2);
+            s0.AddFollow('c', s1);
+            s1.AddFollow('a', s2);
+            s1.AddFollow('c', s1);
+            s2.AddFollow('b', s0);
+
+            automaton.AddEndstate(s2);
 
             FiniteAutomaton minimized = automaton.Minimize();
 
