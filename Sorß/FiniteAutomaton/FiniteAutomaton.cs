@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class FiniteAutomaton : ICloneable
+    public class FiniteAutomaton
     {
         internal Alphabet Alphabet { get; }
         internal List<State> States { get; }
@@ -74,52 +74,17 @@
             return table;
         }
 
-        private (FiniteAutomaton, Dictionary<State, State>) DeepCopyFull()
-        {
-            FiniteAutomaton Copy = new FiniteAutomaton(Alphabet);
-            Dictionary<State, State> Translate = new Dictionary<State, State>();
-            foreach (State s in States)
-            {
-                State ss = Copy.AddState();
-                Translate.Add(s, ss);
-            }
-            States
-                .ForEach(z => Alphabet.Symbols
-                    .Where(y => z.Follow.ContainsKey(y))
-                    .ToList()
-                    .ForEach(x => z.Follow[x]
-                        .ForEach(w => Translate[z]
-                            .AddFollow(x, Translate[w]))));
-
-            return (Copy, Translate);
-        }
-
-        public FiniteAutomaton DeepCopy() => DeepCopyFull().Item1;
-
-        public object Clone() => DeepCopy();
-
         public FiniteAutomaton ConvertToDFA()
         {
-            FiniteAutomaton nfa = DeepCopy();
-
             var dfa = new FiniteAutomaton(Alphabet);
 
-            var Map = new Dictionary<State, List<State>>();
+            var subsets = States.Subsets();
 
-            while (true)
+
+
+            foreach (var subset in subsets)
             {
-                bool finished = true;
-
-                foreach (var state in dfa.States)
-                {
-                    if (!Map.ContainsKey(state))
-                    {
-                        finished = false;
-                        State s = dfa.AddState();
-                    }
-                }
-
-                if (finished) break;
+                var state = dfa.AddState(subset);
             }
 
             return dfa;

@@ -85,5 +85,27 @@ namespace FiniteAuto
 
         public static string ToStringPartition<T>(this IEnumerable<IEnumerable<T>> partitions) =>
             "{ " + string.Join(", ", partitions.Select(x => "{ " + string.Join(", ", x) + " }")) + " }";
+
+        public static IEnumerable<IEnumerable<T>> Subsets<T>(this IEnumerable<T> elements)
+        {
+            var enumerator = elements.GetEnumerator();
+
+            if (!enumerator.MoveNext()) yield break;
+
+            var head = enumerator.Current;
+            // TODO: Optimize
+            var remainder = new List<T>();
+
+            while(enumerator.MoveNext())
+            {
+                remainder.Add(enumerator.Current);
+            }
+
+            // TODO: Optimize
+            foreach (var subset in remainder.Subsets()) {
+                yield return new[]{head}.Concat(subset);
+                yield return subset;
+            }
+        }
     }
 }
