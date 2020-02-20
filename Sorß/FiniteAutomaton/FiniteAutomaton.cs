@@ -84,7 +84,7 @@
 
             foreach (var subset in subsets)
             {
-                var state = dfa.AddState(subset);
+                var state = dfa.AddState($"{{ {string.Join(", ", subset.Select(x => x.Name))} }}");
             }
 
             return dfa;
